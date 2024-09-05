@@ -1,7 +1,7 @@
 username,repo_name,stars,repo_url
 Genymobile,scrcpy,108000,https://github.com/Genymobile/scrcpy
 neovim,neovim,81400,https://github.com/neovim/neovim
-,obsproject,58600,https://github.com/obsproject
+,obsproject,58700,https://github.com/obsproject
 fffaraz,awesome-cpp,58500,https://github.com/fffaraz/awesome-cpp
 git,git,51700,https://github.com/git/git
 FFmpeg,FFmpeg,44700,https://github.com/FFmpeg/FFmpeg
@@ -11,7 +11,7 @@ vim,vim,36000,https://github.com/vim/vim
 huihut,interview,34300,https://github.com/huihut/interview
 mpv-player,mpv,27700,https://github.com/mpv-player/mpv
 ggreer,the_silver_searcher,26000,https://github.com/ggreer/the_silver_searcher
-,ossrs,25200,https://github.com/ossrs
+,ossrs,25300,https://github.com/ossrs
 ,kovidgoyal,23700,https://github.com/kovidgoyal
 ,google,23000,https://github.com/google
 microsoft,vcpkg,22700,https://github.com/microsoft/vcpkg

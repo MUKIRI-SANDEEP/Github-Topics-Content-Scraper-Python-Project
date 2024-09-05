@@ -11,7 +11,7 @@ SonarSource,sonarqube,8900,https://github.com/SonarSource/sonarqube
 facebook,pyre-check,6800,https://github.com/facebook/pyre-check
 ,detekt,6200,https://github.com/detekt
 ,trekhleb,5500,https://github.com/trekhleb
-import-js,eslint-plugin-import,5400,https://github.com/import-js/eslint-plugin-import
+import-js,eslint-plugin-import,5500,https://github.com/import-js/eslint-plugin-import
 pylint-dev,pylint,5200,https://github.com/pylint-dev/pylint
 pmd,pmd,4800,https://github.com/pmd/pmd
 simplecov-ruby,simplecov,4700,https://github.com/simplecov-ruby/simplecov

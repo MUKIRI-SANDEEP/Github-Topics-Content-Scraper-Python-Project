@@ -1,14 +1,14 @@
 username,repo_name,stars,repo_url
 ,public-apis,312000,https://github.com/public-apis
 neovim,neovim,81400,https://github.com/neovim/neovim
-,fastapi,75200,https://github.com/fastapi
+,fastapi,75300,https://github.com/fastapi
 ,hoppscotch,63600,https://github.com/hoppscotch
 ,strapi,62600,https://github.com/strapi
-,ocornut,59200,https://github.com/ocornut
+,ocornut,59300,https://github.com/ocornut
 slatedocs,slate,36000,https://github.com/slatedocs/slate
 ,QuivrHQ,35800,https://github.com/QuivrHQ
 ,Kong,34300,https://github.com/Kong
-trpc,trpc,34200,https://github.com/trpc/trpc
+trpc,trpc,34300,https://github.com/trpc/trpc
 ,httpie,33300,https://github.com/httpie
 ,ccxt,32400,https://github.com/ccxt
 ,hasura,31000,https://github.com/hasura
@@ -18,4 +18,4 @@ YMFE,yapi,27300,https://github.com/YMFE/yapi
 ,directus,27000,https://github.com/directus
 littlecodersh,ItChat,25400,https://github.com/littlecodersh/ItChat
 PostgREST,postgrest,23100,https://github.com/PostgREST/postgrest
-mudler,LocalAI,23000,https://github.com/mudler/LocalAI
+mudler,LocalAI,23100,https://github.com/mudler/LocalAI

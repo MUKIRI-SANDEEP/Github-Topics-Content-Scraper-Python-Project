@@ -1,14 +1,14 @@
 username,repo_name,stars,repo_url
 bitcoin,bitcoin,77800,https://github.com/bitcoin/bitcoin
 ,ccxt,32400,https://github.com/ccxt
-,OpenBB-finance,29500,https://github.com/OpenBB-finance
+,OpenBB-finance,29600,https://github.com/OpenBB-finance
 ,freqtrade,28000,https://github.com/freqtrade
 dogecoin,dogecoin,14400,https://github.com/dogecoin/dogecoin
 monero-project,monero,8800,https://github.com/monero-project/monero
 xmrig,xmrig,8600,https://github.com/xmrig/xmrig
 ,hummingbot,7900,https://github.com/hummingbot
 kroma-network,tachyon,7800,https://github.com/kroma-network/tachyon
-dvf,blockchain,7700,https://github.com/dvf/blockchain
+dvf,blockchain,7800,https://github.com/dvf/blockchain
 lightningnetwork,lnd,7600,https://github.com/lightningnetwork/lnd
 ,lbryio,7200,https://github.com/lbryio
 ,StockSharp,7000,https://github.com/StockSharp
