@@ -1,157 +1,271 @@
-# Scraping Top Repositories for Topics on GitHub
-
-#----------------------------------------------------------------------------------------------
-#Let's write a function to download the page.
-
+#importiing the libraries
 import requests
 from bs4 import BeautifulSoup
 import pandas as pd
 import os
 
+
+# Parsing the page
 def get_topics_page():
-    # TODO - add comments
-    topics_url = 'https://github.com/topics'
-    response = requests.get(topics_url)
-    if response.status_code != 200:
-        raise Exception('Failed to load page {}'.format(topic_url))
-    doc = BeautifulSoup(response.text, 'html.parser')
-    return doc
+  topics_url = 'https://github.com/topics'
+  response = requests.get(topics_url)
+  if response.status_code != 200:
+    raise Exception('Failed to load page {}'.format(topics_url))
+  doc = BeautifulSoup(response.text, 'html.parser')
+  return doc
 
+
+# Scraping Topic Titles Tags
+def get_topic_title_tags(doc):
+  #<p class="f3 lh-condensed mb-0 mt-1 Link--primary">3D</p>  >> This is the elemnt we need to scrape the topic names
+  topic_title_tags = doc.find_all(
+      'p', {'class': 'f3 lh-condensed mb-0 mt-1 Link--primary'})
+  return topic_title_tags
+
+
+''''
+def get_topic_title_text(topic_tittle_tags):
+  topic_title_text = topic_title_tags.text.strip()
+  return topic_title_text
+#code block ends here
+
+#won’t work as intended for a couple of reasons:
+1. .text attribute is used to get the combined text of all tags inside a particular tag. If topic_title_tags is a list of tags (as returned by find_all), then topic_title_tags.text will not work because lists don't have a .text attribute.
+2. List of Tags: topic_title_tags is a list of p elements, and you need to extract text from each individual p tag within that list. The .text attribute on the list object won't give you the text from each tag, and .text on a single tag gives you all the text inside that tag, not the tag itself.
+
+#Correct Approach with for Loop:
+1. Iterating Over Each Tag: To process multiple tags and extract text from each, you need to loop over each tag in the list and access the .text attribute of each tag individually.
+2. Appending to a List: After extracting text from each tag, you append it to a list, which can then be used for further processing or output.
+'''
+
+
+#Scraping Topic Titles Texts
+def get_topic_title_text(topic_title_tags):
+  topic_title_texts = []
+  for tag in topic_title_tags:
+    titles = topic_title_texts.append(tag.text.strip())
+  return topic_title_texts
+
+
+#Creating a Folder
+folder_name = "OUTPUT GITHUB TOPICS DATA FOLDER"
+title_tags_list = os.path.join(folder_name, 'csv_title_tags_list.csv')
+
+#Ensuring the folder exists
+if not os.path.exists(folder_name):
+  os.makedirs(folder_name)
+  print(f"Folder '{folder_name}' created.\n")
+else:
+  print(f"Folder '{folder_name}' already exits.\n")
+
+
+#Saving the list of topic titles tags as a CSV file
+def save_title_tags_to_csv(topic_title_tags, folder_name):
+  # Prepare the CSV file path
+  title_tags_file = os.path.join(folder_name, 'csv_title_tags_list.csv')
+
+  # Extract raw HTML from tags
+  title_tags = []
+  for tag in topic_title_tags:
+    title_tags.append(str(tag))
+
+  df = pd.DataFrame(title_tags, columns=['Title Tag'])
+
+  # Save DataFrame to CSV
+  df.to_csv(title_tags_file, index=False)
+  print(f"Title Tags CSV file saved at: {title_tags_file}\n")
+
+
+#Saving the list of topic titles texts as a CSV file
+def save_title_texts_to_csv(topic_title_texts, folder_name):
+  title_texts_file = os.path.join(folder_name, 'csv_title_texts_list.csv')
+  df = pd.DataFrame(topic_title_texts, columns=['Title Texts'])
+  df.to_csv(title_texts_file, index=False)
+  print(f"Title Texts CSV file saved at: {title_texts_file}\n")
+
+#Calling the Functions
 doc = get_topics_page()
-# print(doc)
+topic_title_tags = get_topic_title_tags(doc)
+topic_title_texts = get_topic_title_text(topic_title_tags)
+
+#Orchestrating the Functions or Calling the Functions to save the files
+save_title_tags_to_csv(topic_title_tags, folder_name)
+save_title_texts_to_csv(topic_title_texts, folder_name)
+
+#Printing Topic Titles Tags in a List inbuilt
+print(f"Topic Titles Tags:\n")
+print(topic_title_tags)
+print('-' * 100)
+
+#Printing Topic Titles Tags in Rows using For Loop
+print("\nTopic Title Tags in Rows:\n")
+for tag in topic_title_tags:
+  print(tag)
+print('-' * 100)
+
+#Printing Topic Titles Texts in a List inbuilt
+print(f"\nTopic Title Texts:\n\n{topic_title_texts}\n{'-'*100}")
+
+#Printing Topic Titles Texts in Rows using For Loop
+print(f"\nTopic Title Texts in Rows:\n")
+for text in topic_title_texts:
+  print(text)
+print('-' * 100)
 
 
-#Let's create some helper functions to parse information from the page.
+#Parsing the complete webpage by specific page number
+def get_more_topics_page(page_number):
+  ajax_url = f'https://github.com/topics?page={page_number}'
+  response = requests.get(ajax_url)
+  if response.status_code != 200:
+    raise Exception('Failed to load page {}'.format(ajax_url))
+  soup = BeautifulSoup(response.text, 'html.parser')
+  return soup
 
-# To get topic titles, we can pick p tags with the class ...
+
+#Scraping Topic Title Tags by specific page by number
+def get_more_topics_title_tags(soup):
+  more_topic_title_tags = soup.find_all(
+      'p', {'class': 'f3 lh-condensed mb-0 mt-1 Link--primary'})
+  return more_topic_title_tags
 
 
-def get_topic_titles(doc):
-    selection_class = 'f3 lh-condensed mb-0 mt-1 Link--primary'
-    topic_title_tags = doc.find_all('p', {'class': selection_class})
-    topic_titles = []
-    for tag in topic_title_tags:
-        topic_titles.append(tag.text)
-    return topic_titles
-titles = get_topic_titles(doc)
-print(f"Topic Titles from the webpage:\n{titles}")
+#Scraping Topic Title Texts by specific page by number
+def get_more_topics_title_texts(more_topic_title_tags):
+  more_topics_title_texts = []
+  for tag in more_topic_title_tags:
+    more_topics_title_texts.append(tag.text.strip())
+  return more_topics_title_texts
 
-#No.of Titles
-print(f"\nNumber of Topic titles: {len(titles)}")
 
-#Top 5 Titles
-print(f"\nTop 5 Topic titles:\n{titles[:5]}\n")
+#Scraping the specific page source code
+page_number = 2
+soup = get_more_topics_page(page_number)
+# print(soup.prettify())
 
-#Similarly we have defined functions for descriptions and URLs.
+#Scraping the 2nd page Topic Title Tags
+more_topic_title_tags = get_more_topics_title_tags(soup)
+print("2nd Page Topic Title Tags:\n")
+print(more_topic_title_tags)
+print(f"\n{'-'*100}")
 
-def get_topic_description(doc):
-    description_selector = 'f5 color-fg-muted mb-0 mt-1'
-    topic_description_tags = doc.find_all('p', {'class': description_selector})
-    topic_description = []
-    for tag in topic_description_tags:
-        topic_description.append(tag.text.strip())
-    return topic_description
-description = get_topic_description(doc)
-# print(f"\nDescription from the webpage:\n{description}")
+#Scraping the 2nd page Topic Title Tags using For Loop
+print(f"2nd Page Title Tags in Rows:\n")
+for tag in more_topic_title_tags:
+  print(tag)
+print(f"\n{'-'*100}")
 
-def get_topic_urls(doc):
-    topic_link_tags = doc.find_all('a', {'class': 'no-underline flex-1 d-flex flex-column'})
-    topic_urls = []
-    base_url = 'https://github.com'
-    for tag in topic_link_tags:
-        topic_urls.append(base_url + tag['href'])
-    return topic_urls
-topic_url = get_topic_urls(doc)
-# print(topic_url)
+#Scraping the 2nd page Topic Title Texts
+print(f"2nd Page Title Texts:\n")
+more_topics_title_texts = get_more_topics_title_texts(more_topic_title_tags)
+print(more_topics_title_texts)
+print(f"\n{'-'*100}")
 
-#Let's put this all together into a single function
+#Scraping the 2nd page Topic Title Texts in rows using For Loop
+print(f"2nd Page Title Texts in Rows:\n")
+for text in get_more_topics_title_texts(more_topic_title_tags):
+  print(text)
+print(f"\n{'-'*100}")
 
-def scrape_topics():
-    # topics_url = 'https://github.com/topics'
-    # response = requests.get(topics_url)
-    # if response.status_code != 200:
-    #     raise Exception('Failed to load page {}'.format(topic_url))
-    # doc = BeautifulSoup(response.text, 'html.parser')
-    topics_dict = {
-        'Topic title': get_topic_titles(doc),
-        'Topic description': get_topic_description(doc),
-        'Topic url': get_topic_urls(doc)
-    }
-    df = pd.DataFrame(topics_dict)
-    df.index +=1 #index starts from 1 
-    return df
-topics_df = scrape_topics()
-print(topics_df)
+#Finding the no.of titles in 2nd page
+print(f"No.of Titles in 2nd Page: {len(more_topic_title_tags)}\n{'-'*100}")
 
-#Get the top 25 repositories from a topic page
 
-def get_topic_page(topic_url):
-    # Download the page
-    response = requests.get(topic_url)
-    # Check successful response
-    if response.status_code != 200:
-        raise Exception('Failed to load page {}'.format(topic_url))
-    # Parse using Beautiful soup
-    topic_doc = BeautifulSoup(response.text, 'html.parser')
-    return topic_doc
+#Finding Total No.of Pages (Load more ...)
+def total_pages():
+  page_number = 1
+  while True:
+    soup = get_more_topics_page(page_number)
+    topic_title_tags = get_more_topics_title_tags(soup)
 
-# doc = get_topic_page('https://github.com/topics/3d')
+    if not topic_title_tags:
+      break  # Stop if no more topics are found
 
-def parse_star_count(stars):
-    stars=stars.strip()
-    if stars[-1]=='k':
-        return int(float(stars[:-1])*1000)
-    return(int(stars))
+    page_number += 1
 
-def get_repo_info(h1_tag, star_tag):
-    # returns all the required info about a repository
-    a_tags = h1_tag.find_all('a')
-    username = a_tags[0].text.strip()
-    repo_name = a_tags[1].text.strip()
-    base_url = 'https://github.com'
-    repo_url =  base_url + a_tags[1]['href']
-    stars = parse_star_count(star_tag.text.strip())
-    return username, repo_name, stars, repo_url
+  return page_number - 1  # The last successful page number
 
-def get_topic_repos(topic_doc):
-    # Get the h1 tags containing repo title, repo URL and username
-    repo_tags = topic_doc.find_all('article',{'class':'border rounded color-shadow-small color-bg-subtle my-4'})
 
-    # Get star tags
-    star_tags=topic_doc.find_all('span',{'id':'repo-stars-counter-star'})
+total_pages = total_pages()
+print(f'Total number of pages: {total_pages}')
 
-    topic_repos_dict = { 'username': [], 'repo_name': [], 'stars': [],'repo_url': []}
+#Finding no.of titles in each page
+for page_number in range(1, total_pages + 1):
+  soup = get_more_topics_page(page_number)
+  more_topic_title_tags = get_more_topics_title_tags(soup)
+  print(f"No.of Titles in Page {page_number}: {len(more_topic_title_tags)}")
+print(f"{'-'*100}")
 
-    # Get repo info
-    for i in range(len(repo_tags)):
-        repo_info = get_repo_info(repo_tags[i], star_tags[i])
-        topic_repos_dict['username'].append(repo_info[0])
-        topic_repos_dict['repo_name'].append(repo_info[1])
-        topic_repos_dict['stars'].append(repo_info[2])
-        topic_repos_dict['repo_url'].append(repo_info[3])
+#Scraping titles tags in each page
+print("All Pages Title Tags:\n")
+for page_number in range(1, total_pages + 1):
+  soup = get_more_topics_page(page_number)
+  more_topic_title_tags = get_more_topics_title_tags(soup)
+  print(f"Page:{page_number}\n{more_topic_title_tags}\n")
+print('-' * 100)
 
-    return pd.DataFrame(topic_repos_dict)
+#Scraping titles texts in each page
+print("All Pages Title Texts:\n")
+for page_number in range(1, total_pages + 1):
+  soup = get_more_topics_page(page_number)
+  more_topic_title_tags = get_more_topics_title_tags(soup)
+  more_topics_title_texts = get_more_topics_title_texts(more_topic_title_tags)
+  print(f"Page:{page_number}\n{more_topics_title_texts}\n")
+print('-' * 100)
 
-def scrape_topic(topic_url, path):
-    if os.path.exists(path):
-        print("The file {} already exists. Skipping...".format(path))
-        return
-    topic_df = get_topic_repos(get_topic_page(topic_url))
-    topic_df.to_csv(path, index=None)
+#Scraping titles texts in each page using For Loop
+print("All Pages Title Texts in Rows:\n")
+for page_number in range(1, total_pages + 1):
+  soup = get_more_topics_page(page_number)
+  more_topic_title_tags = get_more_topics_title_tags(soup)
+  more_topics_title_texts = get_more_topics_title_texts(more_topic_title_tags)
+  print(f"Page:{page_number}")
+  for text in more_topics_title_texts:
+    print(text)
+  print()
+print('-' * 100)
 
-''' Putting it all together
 
-- We have a funciton to get the list of topics
-- We have a function to create a CSV file for scraped repos from a topics page
-- Let's create a function to put them together'''
+#Saving the list of page2 topic titles tags as a CSV file
+def save_page2_title_tags_to_csv(more_topic_title_tags, folder_name):
+  # Prepare the CSV file path
+  more_title_tags_file = os.path.join(folder_name,
+                                      'csv_page2_title_tags_list.csv')
 
-def scrape_topics_repos():
-    print('Scraping list of topics')
-    topics_df = scrape_topics()
+  # Extract raw HTML from tags
+  more_title_tags = []
+  for tag in more_topic_title_tags:
+    more_title_tags.append(str(tag))
 
-    os.makedirs('Output_Data_csv_files', exist_ok=True)
-    for index, row in topics_df.iterrows():
-        print('Scraping top repositories for "{}"'.format(row['Topic title']))
-        scrape_topic(row['Topic url'], 'Output_Data_csv_files/{}.csv'.format(row['Topic title']))
+  df = pd.DataFrame(more_title_tags, columns=['page2_Title Tag'])
 
-print(scrape_topics_repos())
+  # Save DataFrame to CSV
+  df.to_csv(more_title_tags_file, index=False)
+  print(f"Page2 Title Tags CSV file saved at: {more_title_tags_file}\n")
+
+
+#Saving the list of page2 topic titles texts as a CSV file
+def save_page2_title_texts_to_csv(more_topic_title_texts, folder_name):
+  # Prepare the CSV file path
+  more_title_texts_file = os.path.join(folder_name,'csv_page2_title_texts_list.csv')
+
+  df = pd.DataFrame(more_topic_title_texts, columns=['page2_Title Texts'])
+
+  # Save DataFrame to CSV
+  df.to_csv(more_title_texts_file, index=False)
+  print(f"Page2 Title Texts CSV file saved at: {more_title_texts_file}\n")
+
+
+#Scrape page2 or the specific page
+page_number = 2
+soup = get_more_topics_page(page_number)
+more_topic_title_tags = get_more_topics_title_tags(soup)
+more_topic_title_texts = get_more_topics_title_texts(more_topic_title_tags)
+
+# Saving the scraped topic titles tags of page 2 into a CSV file
+save_page2_title_tags_to_csv(more_topic_title_tags, folder_name)
+save_page2_title_texts_to_csv(more_topic_title_texts, folder_name)
+
+
+
+
